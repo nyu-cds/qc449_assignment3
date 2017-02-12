@@ -1,5 +1,9 @@
 """
     N-body simulation.
+
+    Version: origin -- no improvement
+    Time: 95.9s Average of 96.3s 96.1s 95.4s 
+    Improvement: NA
 """
 
 PI = 3.14159265358979323
