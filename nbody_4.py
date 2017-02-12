@@ -1,12 +1,13 @@
 """
     N-body simulation.
 
-    Version: origin -- 2. Using alternatives to membership testing of lists (using set)
-    Time: 92.1s Average of 92.4s 92.5s 91.5s
-    Improvement: 95.9s -> 92.1s
+    Version: origin -- 4. Using data aggregation to reduce loop overheads
+    Time: 84.5s Average of 84.2s 82.6s 82.7s
+    Improvement: 95.9s -> 84.5s
 
-    Rank: 3rd improvement
+    Rank: 2nd improvement
 """
+from itertools import combinations
 
 PI = 3.14159265358979323
 SOLAR_MASS = 4 * PI * PI
@@ -70,46 +71,39 @@ def update_rs(r, dt, vx, vy, vz):
     r[1] += dt * vy
     r[2] += dt * vz
 
-def advance(dt):
+def advance(iterations, body_keypairs, dt):
     '''
         advance the system one timestep
     '''
     # seenit = []
-    seenit = set()
-    for body1 in BODIES.keys():
-        for body2 in BODIES.keys():
-            if (body1 != body2) and not (body2 in seenit):
-                ([x1, y1, z1], v1, m1) = BODIES[body1]
-                ([x2, y2, z2], v2, m2) = BODIES[body2]
-                (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
-                update_vs(v1, v2, dt, dx, dy, dz, m1, m2)
-                # seenit.append(body1)
-                seenit.add(body1)
-        
-    for body in BODIES.keys():
-        (r, [vx, vy, vz], m) = BODIES[body]
-        update_rs(r, dt, vx, vy, vz)
+    for _ in range(iterations):
+        for (body1, body2) in body_keypairs:
+            ([x1, y1, z1], v1, m1) = BODIES[body1]
+            ([x2, y2, z2], v2, m2) = BODIES[body2]
+            (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
+            update_vs(v1, v2, dt, dx, dy, dz, m1, m2)
+            # seenit.append(body1)
+            
+        for body in BODIES.keys():
+            (r, [vx, vy, vz], m) = BODIES[body]
+            update_rs(r, dt, vx, vy, vz)
 
 def compute_energy(m1, m2, dx, dy, dz):
     return (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
     
-def report_energy(e=0.0):
+def report_energy(body_keypairs, e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
     # seenit = []
-    seenit = set()
-
-    for body1 in BODIES.keys():
-        for body2 in BODIES.keys():
-            if (body1 != body2) and not (body2 in seenit):
-                ((x1, y1, z1), v1, m1) = BODIES[body1]
-                ((x2, y2, z2), v2, m2) = BODIES[body2]
-                (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
-                e -= compute_energy(m1, m2, dx, dy, dz)
-                # seenit.append(body1)
-                seenit.add(body1)
-
+    for (body1, body2) in body_keypairs:
+        
+        ((x1, y1, z1), v1, m1) = BODIES[body1]
+        ((x2, y2, z2), v2, m2) = BODIES[body2]
+        (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
+        e -= compute_energy(m1, m2, dx, dy, dz)
+        # seenit.append(body1)
+        
     for body in BODIES.keys():
         (r, [vx, vy, vz], m) = BODIES[body]
         e += m * (vx * vx + vy * vy + vz * vz) / 2.
@@ -132,7 +126,6 @@ def offset_momentum(ref, px=0.0, py=0.0, pz=0.0):
     v[1] = py / m
     v[2] = pz / m
 
-
 def nbody(loops, reference, iterations):
     '''
         nbody simulation
@@ -143,11 +136,12 @@ def nbody(loops, reference, iterations):
     # Set up global state
     offset_momentum(BODIES[reference])
 
+    body_pairs = set(combinations(BODIES,2))
+
     for _ in range(loops):
-        report_energy()
-        for _ in range(iterations):
-            advance(0.01)
-        print(report_energy())
+        report_energy(body_pairs)
+        advance(iterations, body_pairs, 0.01)
+        print(report_energy(body_pairs))
 
 if __name__ == '__main__':
     nbody(100, 'sun', 20000)
