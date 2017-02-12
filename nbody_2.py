@@ -2,7 +2,7 @@
     N-body simulation.
 
     Version: origin -- 2. Using alternatives to membership testing of lists (using set)
-    Time:  Average of 92.4s 92.5s 91.5s
+    Time: 92.1s Average of 92.4s 92.5s 91.5s
     Improvement: 95.9s -> 92.1s
 
 """
