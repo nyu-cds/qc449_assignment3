@@ -4,6 +4,8 @@
     Version: 1. Reducing function call overhead
     Time:  40.7s (Average of 41.6s 40.2s 40.5s)
     Improvement: 95.9s -> 40.7s
+
+    Rank: 1st improvement
 """
 
 PI = 3.14159265358979323
