@@ -2,8 +2,8 @@
     N-body simulation.
 
     Version: 1. Reducing function call overhead
-    Time:  61.1s (Average of 61.1s 61.3s 60.9s)
-    Improvement: 95.9s -> 61.1s
+    Time:  40.7s (Average of 41.6s 40.2s 40.5s)
+    Improvement: 95.9s -> 40.7s
 """
 
 PI = 3.14159265358979323
@@ -45,19 +45,20 @@ BODIES = {
                  -9.51592254519715870e-05 * DAYS_PER_YEAR],
                 5.15138902046611451e-05 * SOLAR_MASS)}
 
-def compute_deltas(x1, x2, y1, y2, z1, z2):
-    return (x1-x2, y1-y2, z1-z2)
+# def compute_deltas(x1, x2, y1, y2, z1, z2):
+#     return (x1-x2, y1-y2, z1-z2)
     
-def compute_b(m, dt, dx, dy, dz):
-    mag = compute_mag(dt, dx, dy, dz)
-    return m * mag
+# def compute_b(m, dt, dx, dy, dz):
+#     mag = compute_mag(dt, dx, dy, dz)
+#     return m * mag
 
-def compute_mag(dt, dx, dy, dz):
-    return dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+# def compute_mag(dt, dx, dy, dz):
+#     return dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
 
 def update_vs(v1, v2, dt, dx, dy, dz, m1, m2):
-    m1_b = compute_b(m1, dt, dx, dy, dz)
-    m2_b = compute_b(m2, dt, dx, dy, dz)
+    mag = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+    m1_b = m1 * mag
+    m2_b = m2 * mag
     v1[0] -= dx * m2_b
     v1[1] -= dy * m2_b
     v1[2] -= dz * m2_b
@@ -80,16 +81,26 @@ def advance(dt):
             if (body1 != body2) and not (body2 in seenit):
                 ([x1, y1, z1], v1, m1) = BODIES[body1]
                 ([x2, y2, z2], v2, m2) = BODIES[body2]
-                (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
-                update_vs(v1, v2, dt, dx, dy, dz, m1, m2)
+                (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
+                mag = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
+                m1_b = m1 * mag
+                m2_b = m2 * mag
+                v1[0] -= dx * m2_b
+                v1[1] -= dy * m2_b
+                v1[2] -= dz * m2_b
+                v2[0] += dx * m1_b
+                v2[1] += dy * m1_b
+                v2[2] += dz * m1_b
                 seenit.append(body1)
         
     for body in BODIES.keys():
         (r, [vx, vy, vz], m) = BODIES[body]
-        update_rs(r, dt, vx, vy, vz)
+        r[0] += dt * vx
+        r[1] += dt * vy
+        r[2] += dt * vz
 
-def compute_energy(m1, m2, dx, dy, dz):
-    return (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
+# def compute_energy(m1, m2, dx, dy, dz):
+#     return (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
     
 def report_energy(e=0.0):
     '''
@@ -101,8 +112,8 @@ def report_energy(e=0.0):
             if (body1 != body2) and not (body2 in seenit):
                 ((x1, y1, z1), v1, m1) = BODIES[body1]
                 ((x2, y2, z2), v2, m2) = BODIES[body2]
-                (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
-                e -= compute_energy(m1, m2, dx, dy, dz)
+                (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
+                e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
                 seenit.append(body1)
         
     for body in BODIES.keys():
