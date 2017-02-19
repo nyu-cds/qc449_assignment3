@@ -20,7 +20,7 @@ BODIES = {
                 [1.66007664274403694e-03 * DAYS_PER_YEAR,
                  7.69901118419740425e-03 * DAYS_PER_YEAR,
                  -6.90460016972063023e-05 * DAYS_PER_YEAR],
-                9.54791938424326609e-04 * SOLAR_MASS),
+                9.54791938424326609e-04 * 39.4784176044),
 
     'saturn': ([8.34336671824457987e+00,
                 4.12479856412430479e+00,
@@ -28,7 +28,7 @@ BODIES = {
                [-2.76742510726862411e-03 * DAYS_PER_YEAR,
                 4.99852801234917238e-03 * DAYS_PER_YEAR,
                 2.30417297573763929e-05 * DAYS_PER_YEAR],
-               2.85885980666130812e-04 * SOLAR_MASS),
+               2.85885980666130812e-04 * 39.4784176044),
 
     'uranus': ([1.28943695621391310e+01,
                 -1.51111514016986312e+01,
@@ -36,7 +36,7 @@ BODIES = {
                [2.96460137564761618e-03 * DAYS_PER_YEAR,
                 2.37847173959480950e-03 * DAYS_PER_YEAR,
                 -2.96589568540237556e-05 * DAYS_PER_YEAR],
-               4.36624404335156298e-05 * SOLAR_MASS),
+               4.36624404335156298e-05 * 39.4784176044),
 
     'neptune': ([1.53796971148509165e+01,
                  -2.59193146099879641e+01,
@@ -44,35 +44,7 @@ BODIES = {
                 [2.68067772490389322e-03 * DAYS_PER_YEAR,
                  1.62824170038242295e-03 * DAYS_PER_YEAR,
                  -9.51592254519715870e-05 * DAYS_PER_YEAR],
-                5.15138902046611451e-05 * SOLAR_MASS)}
-
-
-
-
-# def compute_deltas(x1, x2, y1, y2, z1, z2):
-#     return (x1-x2, y1-y2, z1-z2)
-    
-# def compute_b(m, dt, dx, dy, dz):
-#     mag = compute_mag(dt, dx, dy, dz)
-#     return m * mag
-
-# def compute_mag(dt, dx, dy, dz):
-#     return dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-
-# def update_vs(v1, v2, dt, dx, dy, dz, m1, m2):
-#     m1_b = compute_b(m1, dt, dx, dy, dz)
-#     m2_b = compute_b(m2, dt, dx, dy, dz)
-#     v1[0] -= dx * m2_b
-#     v1[1] -= dy * m2_b
-#     v1[2] -= dz * m2_b
-#     v2[0] += dx * m1_b
-#     v2[1] += dy * m1_b
-#     v2[2] += dz * m1_b
-
-# def update_rs(r, dt, vx, vy, vz):
-#     r[0] += dt * vx
-#     r[1] += dt * vy
-#     r[2] += dt * vz
+                5.15138902046611451e-05 * 39.4784176044)}
 
 def advance(iterations, body_keypairs, bodies, dt):
     '''
@@ -80,12 +52,9 @@ def advance(iterations, body_keypairs, bodies, dt):
     '''
 
     for _ in range(iterations):
-        # seenit = []
         for (body1, body2) in body_keypairs:
             ([x1, y1, z1], v1, m1) = bodies[body1]
             ([x2, y2, z2], v2, m2) = bodies[body2]
-            # (dx, dy, dz) = compute_deltas(x1, x2, y1, y2, z1, z2)
-            # update_vs(v1, v2, dt, dx, dy, dz, m1, m2)
             (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
             # update v's
             mag = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
@@ -95,23 +64,17 @@ def advance(iterations, body_keypairs, bodies, dt):
             v2[0] += dx * m1 * mag
             v2[1] += dy * m1 * mag
             v2[2] += dz * m1 * mag
-            # seenit.append(body1)
             
         for body in bodies.keys():
             (r, [vx, vy, vz], m) = bodies[body]
             r[0] += dt * vx
             r[1] += dt * vy
             r[2] += dt * vz
-
-# def compute_energy(m1, m2, dx, dy, dz):
-#     return (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
     
 def report_energy(bodies, body_keypairs, e=0.0):
     '''
         compute the energy and return it so that it can be printed
     '''
-
-    # seenit = []
 
     for (body1, body2) in body_keypairs:
         ((x1, y1, z1), v1, m1) = bodies[body1]
@@ -120,8 +83,6 @@ def report_energy(bodies, body_keypairs, e=0.0):
         (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
         # comput energy
         e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
-
-        # seenit.append(body1)
 
     for body in bodies.keys():
         (r, [vx, vy, vz], m) = bodies[body]
