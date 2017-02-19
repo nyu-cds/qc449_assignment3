@@ -58,12 +58,14 @@ def advance(iterations, body_keypairs, bodies, dt):
             (dx, dy, dz) = (x1-x2, y1-y2, z1-z2)
             # update v's
             mag = dt * ((dx * dx + dy * dy + dz * dz) ** (-1.5))
-            v1[0] -= dx * m2 * mag
-            v1[1] -= dy * m2 * mag
-            v1[2] -= dz * m2 * mag
-            v2[0] += dx * m1 * mag
-            v2[1] += dy * m1 * mag
-            v2[2] += dz * m1 * mag
+            m1_mag = m1 * mag
+            m2_mag = m2 * mag
+            v1[0] -= dx * m2_mag
+            v1[1] -= dy * m2_mag
+            v1[2] -= dz * m2_mag
+            v2[0] += dx * m1_mag
+            v2[1] += dy * m1_mag
+            v2[2] += dz * m1_mag
             
         for body in bodies.keys():
             (r, [vx, vy, vz], m) = bodies[body]
