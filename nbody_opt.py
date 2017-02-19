@@ -4,6 +4,10 @@
     Version: Optimized
     Time: 29.6s Average of 29.4s 30.0s 29.3s
     Speed up: R = 95.9 / 29.6 = 3.24
+
+    Closing Issues: 29.6s -- 27.6s
+    R = 95.9/27.6 = 3.47
+    Comment: after optimization, the performance is improved by 2.0 seconds
 """
 from itertools import combinations
 
@@ -51,6 +55,8 @@ def advance(iterations, body_keypairs, bodies, dt):
         advance the system one timestep
     '''
 
+    BODIES_KEYS = bodies.keys() 
+
     for _ in range(iterations):
         for (body1, body2) in body_keypairs:
             ([x1, y1, z1], v1, m1) = bodies[body1]
@@ -67,7 +73,7 @@ def advance(iterations, body_keypairs, bodies, dt):
             v2[1] += dy * m1_mag
             v2[2] += dz * m1_mag
             
-        for body in bodies.keys():
+        for body in BODIES_KEYS:
             (r, [vx, vy, vz], m) = bodies[body]
             r[0] += dt * vx
             r[1] += dt * vy
@@ -78,6 +84,8 @@ def report_energy(bodies, body_keypairs, e=0.0):
         compute the energy and return it so that it can be printed
     '''
 
+    BODIES_KEYS = bodies.keys()
+
     for (body1, body2) in body_keypairs:
         ((x1, y1, z1), v1, m1) = bodies[body1]
         ((x2, y2, z2), v2, m2) = bodies[body2]
@@ -86,7 +94,7 @@ def report_energy(bodies, body_keypairs, e=0.0):
         # comput energy
         e -= (m1 * m2) / ((dx * dx + dy * dy + dz * dz) ** 0.5)
 
-    for body in bodies.keys():
+    for body in BODIES_KEYS:
         (r, [vx, vy, vz], m) = bodies[body]
         e += m * (vx * vx + vy * vy + vz * vz) / 2.
         
@@ -97,9 +105,10 @@ def offset_momentum(bodies, reference, px=0.0, py=0.0, pz=0.0):
         ref is the body in the center of the system
         offset values from this reference
     '''
+    BODIES_KEYS = bodies.keys()
     ref = bodies[reference]
 
-    for body in bodies.keys():
+    for body in BODIES_KEYS:
         (r, [vx, vy, vz], m) = bodies[body]
         px -= vx * m
         py -= vy * m
