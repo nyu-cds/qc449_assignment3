@@ -136,7 +136,7 @@ def nbody(loops, reference, iterations):
     body_pairs = set(combinations(BODIES,2))
 
     for _ in range(loops):
-        report_energy(Bodies, body_pairs)
+        # report_energy(Bodies, body_pairs)
         advance(iterations, body_pairs, Bodies, 0.01)
         print(report_energy(Bodies, body_pairs))
 
