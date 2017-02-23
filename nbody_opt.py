@@ -129,14 +129,16 @@ def nbody(loops, reference, iterations):
     '''
 
     # Set up global state
-    offset_momentum(BODIES, reference)
+
+    Bodies = BODIES
+    offset_momentum(Bodies, reference)
 
     body_pairs = set(combinations(BODIES,2))
 
     for _ in range(loops):
-        report_energy(BODIES, body_pairs)
-        advance(iterations, body_pairs, BODIES, 0.01)
-        print(report_energy(BODIES, body_pairs))
+        report_energy(Bodies, body_pairs)
+        advance(iterations, body_pairs, Bodies, 0.01)
+        print(report_energy(Bodies, body_pairs))
 
 if __name__ == '__main__':
     nbody(100, 'sun', 20000)
