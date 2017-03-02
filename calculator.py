@@ -200,6 +200,8 @@ if __name__ == '__main__':
     A = np.random.random((M,N))
     B = np.random.random((M,N))
 
+    hypotenuse(A,B)
+
     # import cProfile
     # %prun hypotenuse(A,B)
 
