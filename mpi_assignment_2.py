@@ -18,13 +18,22 @@ num = np.array([0])
 if rank == 0:
 	# Get starting number (integer, less than 100)
 	while True:
-		start_num = int(input("Enter The starting number: "))
-		if isinstance(start_num, int) == False:
-			print("Exception: invalid not-integer input.")
-		elif start_num >= 100:
+
+		# Get starting number and verify if it is an integer
+		start_num = 0
+		try:
+			input_str = input("Enter The starting number: ")
+			start_num = int(input_str)
+		except ValueError:
+			print("Exception: Illegal input", input_str, "is not integer")
+			continue
+
+		# Verify the integer is less than 100
+		if start_num >= 100:
 			print("Exception: illegal starting number larger than or equal to 100. Try again.")
 		else:
 			break
+
 	print("Process", rank, "reads a value", start_num, "from the user and verifies that it is an integer less than 100.")
 
 	# multiply with next rank and send to next process after verifying the existence of next process
