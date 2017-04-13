@@ -12,6 +12,6 @@ size = comm.Get_size() # get the total number of all processes
 rank = comm.Get_rank() # index of a particular process
 
 if rank % 2 == 0: # even
-    print("Hello from process", rank)
+	print("Hello from process", rank)
 else: # odd
 	print("Goodbye from process", rank)
