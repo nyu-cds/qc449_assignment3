@@ -21,8 +21,8 @@ if rank == 0:
 
 		# Get starting number and verify if it is an integer
 		start_num = 0
+		input_str = input("Enter The starting number: ")
 		try:
-			input_str = input("Enter The starting number: ")
 			start_num = int(input_str)
 		except ValueError:
 			print("Exception: Illegal input", input_str, "is not integer")
@@ -55,5 +55,6 @@ if rank > 0:
 		comm.Isend(num, dest=rank+1)
 	else:
 		print("Exception: no Process", rank+1, "exists")
+		print("RESULT: ", num[0])
 		print("Program ends.")
         
