@@ -61,10 +61,11 @@ data_process = sorted(data_process)
 # step 4 : gather the sorted result back to process 0 by collective communication methed gather()
 data_sorted = comm.gather(data_process, root=0)
 
-# step 5: verification the increasing order of the sorted array
+# step 5: rebuild the array
 if rank == 0:
 	data_sorted = np.concatenate(data_sorted)
 
+# step 6: verification the increasing order of the sorted array in root process
 if rank == 0:
 	# check the order and track the error if not sorted
 
