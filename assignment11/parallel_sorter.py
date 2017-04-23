@@ -6,7 +6,7 @@ Description:
 1. given arbitary number of processes (user-defined) to parallelly sort a large unsorted data set (10,000 elements)
 2. define bins (which collects a certain range of integers), and allocate the elements into bins
 3. collective communication in mpi4py is used for assigning tasks and gather the result
-4. the order of sorted array is checked for correctness
+4. the length of the result and the order of that sorted array is checked for correctness
 
 Assumptions:
 1. to simplify the problem, only integers are considered
@@ -33,7 +33,6 @@ data_sorted = np.array([])
 if rank == 0 :
 	# root process: generate a large unsorted data set
 	data = np.random.randint(low=0, high=array_size, size=array_size)
-	print(data)
 
 	# define the amount of bins and their size
 	bin_num = size
@@ -65,20 +64,14 @@ data_sorted = comm.gather(data_process, root=0)
 # step 5: verification the increasing order of the sorted array
 if rank == 0:
 	data_sorted = np.concatenate(data_sorted)
-	print(data_sorted)
 
 if rank == 0:
-	# check the order
-	sort_b = True
-	for i in range(array_size-1):
-		try:
-			sort_b = data_sorted[i] <= data_sorted[i+1]
-		except TypeError:
-			continue
+	# check the order and track the error if not sorted
 
-	if sort_b == True:
-		print("SORTED")
-	else:
-		print("UNSORTED")
+	# check the length
+	print("Same length:", len(data_sorted)==array_size) 
+	# check the order
+	print("Sorted:", np.alltrue(data_sorted == sorted(data)))
+
 
 
